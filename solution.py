@@ -1,5 +1,7 @@
 assignments = []
 
+from values import *
+
 def assign_value(values, box, value):
     """
     Please use this function to update your values dictionary!
@@ -9,28 +11,6 @@ def assign_value(values, box, value):
     if len(value) == 1:
         assignments.append(values.copy())
     return values
-
-
-
-def cross(A, B):
-    "Cross product of elements in A and elements in B."
-    return [s + t for s in A for t in B]
-
-
-rows = 'ABCDEFGHI'
-cols = '123456789'
-
-boxes = cross(rows, cols)
-
-row_units = [cross(r, cols) for r in rows]
-column_units = [cross(rows, c) for c in cols]
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-diagonal_1_units = [[a + str(i + 1) for i, a in enumerate(rows)]]
-diagonal_2_units = [[a + str(len(rows) - i) for i, a in enumerate(rows)]]
-unitlist = row_units + column_units + square_units + diagonal_1_units + diagonal_2_units
-units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
-peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
-
 
 
 def naked_twins(_values):
@@ -105,6 +85,11 @@ def display(values):
     pass
 
 def eliminate(values):
+    """
+       Remove values that cant not be used in a box because they were used as solution in other peers of that box
+       Args:
+           values(dict): The sudoku in dictionary form
+       """
     solved_values = [box for box in values.keys() if len(values[box]) == 1]
     for box in solved_values:
         digit = values[box]
@@ -113,6 +98,12 @@ def eliminate(values):
     return values
 
 def only_choice(values):
+    """
+          Given several boxes with different possible values in a unit, if there is a number that appears in only one of
+          those boxes then that box is the only choice for that number
+          Args:
+              values(dict): The sudoku in dictionary form
+    """
     for unit in unitlist:
         for digit in '123456789':
             dplaces = [box for box in unit if digit in values[box]]
@@ -121,6 +112,11 @@ def only_choice(values):
     return values
 
 def reduce_puzzle(values):
+    """
+          Remove values that cant not be used in a box because they were used as solution in other peers of that box
+          Args:
+              values(dict): The sudoku in dictionary form
+    """
     stalled = False
     while not stalled:
         # Check how many boxes have a determined value
@@ -129,6 +125,10 @@ def reduce_puzzle(values):
         values = eliminate(values)
         # Use the Only Choice Strategy
         values = only_choice(values)
+
+        #Applying Naked Twins
+        values = naked_twins(values)
+
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         # If no new values were added, stop the loop.

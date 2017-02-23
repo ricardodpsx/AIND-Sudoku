@@ -3,12 +3,31 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: For every unit I find every possible pair of twins. As soon as a twin is found, the values in the twin ares removed 
-from the values of the other peers if applicable.
+A: With the naked twins technique we introduce a new rule or theorem that allow us to remove potencial values on the different
+boxes of the Sudoku in order to reduce the search space. The more we reduce the search space, the faster the DPS will go.
+
+We can think in the Naked Twins as an inferred rule that can be expressed as 
+"Given the boxes A != B  in unit U where A = B = (a,b) there is no box c != A != B that contains a or b" (Excuse the lack of mathematical symbols)
+
+So every time we enforce rules and make the the board change, the constraints on some boxes may change, so we need to propagate the constraint changes.
+
+The more rules we find, the more rules we can apply to reduce the search space. That makes me think that if you encode the rules as predicates and you have
+an algorithm that generates new theorems based on the initial predicates then you can apply all kind of auto generated constraints to reduce the search space.
+
+The way it is solved in this case is that for every unit we find every possible pair of twins. As soon as a twin is found, the values in the twin ares removed 
+   
+
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-We just had to add the two diagonals to the set of Units in lines 28 and 29
+The sudoku problem is encoded in a clever way with the concepts of Units, and Boxes
+We are just trying to find out values that We can put in the boxes that satisfy the constraints in the boxes and in the Units. So basically we have two types of general rules:
+  Boxes: You have to put one value between 1 and 9
+  Units: You can not use the same number twice
+So Units can be whatever we want: diagonals, verticals, boxes, Circles, as long as you follow the rule exposed previously you
+ just need to apply the same strategy of reducing the possible values in the Units by applying the rules and propagating the constraints on the boxes, finalizing with a DPS.
+
+In this case I just had to add the two diagonals to the set of Units in lines 28 and 29
 
 ### Install
 
